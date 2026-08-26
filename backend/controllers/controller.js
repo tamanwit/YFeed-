@@ -1,5 +1,7 @@
 const User = require("../models/model");
 const argon2 = require("argon2");
+const jwt = require('jsonwebtoken')
+require('dotenv').config()
 
 const registerUser = async (req, res) => {
   try {
@@ -89,6 +91,14 @@ const loginUser = async (req, res) => {
         message: "Invalid email or password",
       });
     }
+
+    const payload = {
+      id: user._id,
+      email : user.email,
+    }
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN,
+    });
 
     const userResponse = {
       id: user._id,
