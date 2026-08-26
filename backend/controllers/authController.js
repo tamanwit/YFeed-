@@ -92,10 +92,13 @@ const loginUser = async (req, res) => {
       });
     }
 
+    // contains user information for profile purposes
     const payload = {
       id: user._id,
+      username : user.username,
       email : user.email,
     }
+    // token signature
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
