@@ -81,8 +81,40 @@ const getOtherAccount = async (req, res) => {
   }
 };
 
+const followProfile = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const userId = req.user.id;
+    const targetUser = await User.findOne({ username });
+    if (!targetUser) {
+      return res.status(404).json({ message: "Username Not Found" });
+    }
+    if (targetUser._id.toString() === userId) {
+      return res.status(400).json({ message: "You cannot follow yourself" });
+    }
+    // Atomic update for target user
+    await User.findByIdAndUpdate(targetUser._id, {
+      $addToSet: { followers: userId },
+    });
+    // Atomic update for logged-in user
+    await User.findByIdAndUpdate(userId, {
+      $addToSet: { followings: targetUser._id },
+    });
+
+    return res.status(200).json({
+      message: `${username} is being followed by ${req.user.username}`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getUserProfile,
   updateUserProfile,
   getOtherAccount,
+  followProfile,
 };
