@@ -143,6 +143,7 @@ const unfollowProfile = async (req, res)=>{
   }
 }
 
+
 module.exports = {
   getUserProfile,
   updateUserProfile,

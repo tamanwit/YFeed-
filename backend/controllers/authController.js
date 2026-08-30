@@ -1,7 +1,14 @@
 const User = require("../models/model");
 const argon2 = require("argon2");
-const jwt = require('jsonwebtoken')
-require('dotenv').config()
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
+const cookieOptions = {
+  httpOnly: true, // Prevents XSS attacks from reading the cookie
+  secure: process.env.NODE_ENV === "production", // HTTPS only in production
+  sameSite: "strict", // Protects against CSRF attacks
+  maxAge: 24 * 60 * 60 * 1000, // 1 day in milliseconds
+};
 
 const registerUser = async (req, res) => {
   try {
@@ -81,7 +88,7 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({
-        message: "Invalid email or password", 
+        message: "Invalid email or password",
       });
     }
     const isPasswordValid = await argon2.verify(user.password, password);
@@ -95,9 +102,8 @@ const loginUser = async (req, res) => {
     // contains user information for profile purposes
     const payload = {
       id: user._id,
-      username : user.username,
-      email : user.email,
-    }
+      username: user.username,
+    };
     // token signature
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRES_IN,
@@ -110,12 +116,10 @@ const loginUser = async (req, res) => {
       email: user.email,
     };
 
-    return res.status(200).json({
+    return res.status(200).cookie("token", token, cookieOptions).json({
       message: "Login successful",
       user: userResponse,
-      token : token,
     });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({
