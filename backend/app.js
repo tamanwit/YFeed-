@@ -1,6 +1,8 @@
 const express = require('express')
+const connectDB = require('./config/db')
 require('dotenv').config()
 const app = express()
+connectDB()
 const authRouter = require('./routes/authRouter')
 const profileRouter = require('./routes/profileRouter')
 

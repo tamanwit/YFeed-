@@ -1,4 +1,4 @@
-const User = require("../models/model");
+const User = require("../models/UserModel");
 
 const getUserProfile = async (req, res) => {
   try {
