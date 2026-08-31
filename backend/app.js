@@ -5,9 +5,11 @@ const app = express()
 connectDB()
 const authRouter = require('./routes/authRouter')
 const profileRouter = require('./routes/profileRouter')
+const postRouter = require('./routes/postRouter')
 
 app.use(express.json())
 app.use('/db', authRouter)
 app.use('/user', profileRouter)
+app.use('/post', postRouter)
 
 app.listen(process.env.PORT, ()=>console.log('server running'))
